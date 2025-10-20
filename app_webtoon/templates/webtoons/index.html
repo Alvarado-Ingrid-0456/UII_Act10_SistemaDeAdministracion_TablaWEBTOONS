@@ -1,0 +1,130 @@
+{% extends 'webtoons/base.html' %}
+{% block body %}
+<h3 class="m-4">Todos los Webtoons</h3>
+<div class="row">
+    <div class="col-12">
+        {% if webtoons %}
+        <div class="card bg-light ms-4 me-4 mb-4">
+            <div class="card-header">
+                Webtoons <i class="fa-solid fa-book-open fa-lg"></i>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Título</th>
+                                <th scope="col">Portada</th>
+                                <th scope="col">Autor</th>
+                                <th scope="col">Género</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Fecha de Publicación</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Calificación Promedio</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for webtoon in webtoons %}
+                            <tr>
+                                <td>{{ webtoon.id_webtoon }}</td>
+                                <td>{{ webtoon.titulo }}</td>
+                                    <td>
+                                        <img src="{{ webtoon.portada_url }}" alt="Portada de {{ webtoon.titulo }}" style="max-width: 100px; max-height: 150px;">    
+                                <td>{{ webtoon.autor }}</td>
+                                <td>{{ webtoon.genero }}</td>
+                                <td>{{ webtoon.descripcion|truncatechars:50 }}</td>
+                                <td>{{ webtoon.fecha_publicacion }}</td>
+                                <td>{{ webtoon.estado }}</td>
+                                <td>{{ webtoon.calificacion_promedio }}</td>
+                                <td>
+                                    <!-- Botón Ver -->
+                                    <button type="button" class="btn btn-success me-1" data-bs-toggle="modal" data-bs-target="#ver{{webtoon.id_webtoon}}">
+                                        <i class="fa-solid fa-circle-info fa-lg"></i>
+                                    </button>
+
+                                    <!-- Modal Ver Webtoon -->
+                                    <div class="modal" id="ver{{webtoon.id_webtoon}}" tabindex="-1" aria-labelledby="verLabel{{webtoon.id_webtoon}}" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">
+                                                        Webtoon: {{ webtoon.titulo }} - ID: {{ webtoon.id }}
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true"></span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <ul class="list-unstyled">
+                                                        <li>ID: <strong>{{ webtoon.id_webtoon }}</strong></li>
+                                                        <li>Título: <strong>{{ webtoon.titulo }}</strong></li>
+                                                        <li>Portada: <strong>{{ webtoon.portada_url }}</strong></li>
+                                                        <li>Autor: <strong>{{ webtoon.autor }}</strong></li>
+                                                        <li>Género: <strong>{{ webtoon.genero }}</strong></li>
+                                                        <li>Descripción: <strong>{{ webtoon.descripcion }}</strong></li>
+                                                        <li>Fecha de Publicación: <strong>{{ webtoon.fecha_publicacion }}</strong></li>
+                                                        <li>Estado: <strong>{{ webtoon.estado }}</strong></li>
+                                                        <li>Calificación Promedio: <strong>{{ webtoon.calificacion_promedio }}</strong></li>
+                                                    </ul>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Botón Editar -->
+                                    <a class="btn btn-warning me-1" href="{% url 'editar_webtoon' webtoon.id_webtoon %}">
+                                        <i class="fa-solid fa-pen-to-square fa-lg"></i>
+                                    </a>
+
+                                    <!-- Botón Eliminar -->
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#eliminar{{webtoon.id_webtoon}}">
+                                        <i class="fa-solid fa-trash-can fa-lg"></i>
+                                    </button>
+
+                                    <!-- Modal Eliminar -->
+                                    <div class="modal" id="eliminar{{webtoon.id_webtoon}}" tabindex="-1" aria-labelledby="eliminarLabel{{webtoon.id_webtoon}}" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">
+                                                        Webtoon: {{ webtoon.titulo }} - ID: {{ webtoon.id }}
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true"></span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>¿Estás seguro de querer eliminar este Webtoon?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <form action="{% url 'eliminar_webtoon' webtoon.id_webtoon %}" method="POST">
+                                                        {% csrf_token %}
+                                                        <input type="submit" class="btn btn-primary" value="Eliminar">
+                                                    </form>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                </p>
+            </div>
+        </div>
+        {% else %}
+        <h5 class="alert alert-primary ms-4 me-4">No hay Webtoons registrados</h5>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
